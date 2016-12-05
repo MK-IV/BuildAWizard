@@ -1,11 +1,11 @@
-import xbmc, xbmcgui
+import xbmc, xbmcgui, xbmcaddon
 import shutil
 import os
 import re
 import downloader
 import extract
-
-
+import time
+import urllib2
 
 def OPEN_URL(url):
     req = urllib2.Request(url)
@@ -21,49 +21,62 @@ def UpdateCheck(AddonTitle, addon_id):
         dp.create(AddonTitle,'Checking for updates...','', 'Please Wait')
         link = OPEN_URL('https://raw.githubusercontent.com/MK-IV/BuildAWizard/master/addon.xml').replace('\n','').replace('\r','')
         match = re.compile('BAWversion="(.+?)"').findall(link)
-        for mk4version in match:
-            xbmc.log(Title+' is checking for core updates...')
+        for BAWversion in match:
+            ADDON=xbmcaddon.Addon(id=addon_id)
+            xbmc.log(AddonTitle+' is checking for core updates...')
             xbmc.log(addon_id+' Latest version='+BAWversion+' Installed version='+ADDON.getAddonInfo("version")+'')
-            if mk4version > ADDON.getAddonInfo('version'):
+            if BAWversion > ADDON.getAddonInfo('version'):
                 xbmc.log(AddonTitle+' Update files found... Attempting update...')
                 #try:
                 ADDONS = xbmc.translatePath(os.path.join('special://home','addons',''))
                 path = xbmc.translatePath(os.path.join('special://home/addons','packages'))
                 dp = xbmcgui.DialogProgress()
-                dp.create(AddonTitle,'Downloading '+Title+' update...','', 'Please Wait')
+                dp.create(AddonTitle,'Downloading '+AddonTitle+' update...','', 'Please Wait')
                 lib=os.path.join(path, 'BuildAWizard-master.zip')
                 try:
                     os.remove(lib)
                 except:
                     pass
                 downloader.download('https://github.com/MK-IV/BuildAWizard/archive/master.zip', lib, dp)
-                dp.update(0,'Downloading '+Title+' update... [COLOR lime]Finished[/COLOR]', 'Installing...')
+                dp.update(0,'Downloading '+AddonTitle+' update... [COLOR lime]Finished[/COLOR]', 'Installing...')
                 extract.all(lib,ADDONS,dp)
                 time.sleep(.5)
                 try:
                     os.remove(lib)
                 except:
                     pass
-                addontmp = xbmc.translatePath(os.path.join(Addons+'BuildAWizard-master/','addon.xml'))
-                defaulttmp = xbmc.translatePath(os.path.join(Addons+'BuildAWizard-master/','default.py'))
-                local = xbmc.translatePath(os.path.join(Addons,addon_id))
-                master = xbmc.translatePath(os.path.join(Addons,'BuildAWizard-master'))
-                link = open(os.path.join(local, 'default.py')
+                    Addons = xbmc.translatePath('special://home/addons/')
+                    addontmp = xbmc.translatePath(os.path.join(Addons+'BuildAWizard-master/','addon.xml'))
+                    defaulttmp = xbmc.translatePath(os.path.join(Addons+'BuildAWizard-master/','default.py'))
+                    updatetmp = xbmc.translatePath(os.path.join(Addons+'BuildAWizard-master/','updater.py'))
+                    defaultpy = xbmc.translatePath(os.path.join(Addons+addon_id,'default.py'))
+                    updatepy = xbmc.translatePath(os.path.join(Addons+addon_id,'updater.py'))
+                    addonxml = xbmc.translatePath(os.path.join(Addons+addon_id,'addon.xml'))
+                    local = xbmc.translatePath(os.path.join(Addons,addon_id))
+                    master = xbmc.translatePath(os.path.join(Addons,'BuildAWizard-master'))
+                link = open(os.path.join(local, 'default.py'))
                 match = re.compile('addonname="(.+?)"wizardname="(.+?)"providername="(.+?)"zipurl="(.+?)"').findall(link)
                 for addonname,wizardname,providername,zipurl in match:
-                    a=open((addontemp).read()
+                    a=open(addontmp).read()
                     b=a.replace('addonname',addonname).replace('wizardname',wizardname).replace('providername',providername)
-                    f = open((os.path.join(root, file)), mode='w')
+                    f = open(addontmp, mode='w')
                     f.write(str(b))
                     f.close()
                     time.sleep(2)
-                    a=open(defaulttemp).read()
-                    b=a.replace('addonname',addon_id).replace('wizardname',name).replace('providername',proname).replace('zipurl',url)
+                    a=open(defaulttmp).read()
+                    b=a.replace('addonname',addonname).replace('wizardname',wizardname).replace('providername',providername).replace('zipurl',zipurl)
+                    f = open(defaulttmp, mode='w')
                     f.write(str(b))
                     f.close()
                     pass
-                shutil.rmtree(Local)
-                os.rename(Master,Local)
+                os.unlink(defaultpy)
+                shutil.copy(defaulttmp,defaultpy)
+                os.unlink(addonxml)
+                shutil.copy(addontmp,addonxml)
+                os.unlink(updatepy)
+                shutil.copy(updatetmp,updatepy)
+                
+                os.rename(master,local)
                 xbmc.executebuiltin("Container.Refresh")
                 dp.close
                 #except: pass

@@ -11,7 +11,8 @@ dialog=xbmcgui.Dialog()
 HOME=xbmc.translatePath('special://home/')
 dp=xbmcgui.DialogProgress()
 FANART=xbmc.translatePath(os.path.join('special://home/addons/' + addon_id , 'fanart.jpg'))
-ICON=xbmc.translatePath(os.path.join('special://home/addons/' + addon_id, 'icon.png'))          
+ICON=xbmc.translatePath(os.path.join('special://home/addons/' + addon_id, 'icon.png')) 
+Updater=xbmc.translatePath(os.path.join('special://home/addons/' + addon_id , 'updater.py'))
 VERSION="1.0.0"
 Addons26=xbmc.translatePath(os.path.join('special://home/userdata/Database/','Addons26.db'))
 
@@ -258,7 +259,10 @@ if mode==None or url==None or len(url)<1:
         Index()
         
 elif mode==1:
-    updater.UpdateCheck(AddonTitle, addon_id)
+    if os.path.exists(Updater):
+        updater.UpdateCheck(AddonTitle, addon_id)
+        pass
+    else: pass
     Wizard(name,url,description)
         
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
