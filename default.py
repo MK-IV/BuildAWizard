@@ -2,11 +2,11 @@ import xbmcaddon, xbmcgui, xbmc, os, sys, urllib, urllib2, xbmcplugin, re, extra
 
 
 USER_AGENT = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'
-addon_id="addonname"
+addon_id="plugin.program.BauildATester"
 ADDON=xbmcaddon.Addon(id=addon_id)
-AddonTitle="wizardname"
-proname="providername"
-pointerurl="zipurl"
+AddonTitle="Builda tester wizard"
+proname="amc"
+pointerurl="https://mk-iv.github.io"
 dialog=xbmcgui.Dialog()
 HOME=xbmc.translatePath('special://home/')
 dp=xbmcgui.DialogProgress()
@@ -61,7 +61,7 @@ def Open_Url(url):
 def Wizard(name,url,description):
     path = xbmc.translatePath(os.path.join('special://home/addons','packages'))
     dp = xbmcgui.DialogProgress()        
-    dp.create("wizardname","Downloading required files... ",'', 'Please Wait')
+    dp.create("Builda tester wizard","Downloading required files... ",'', 'Please Wait')
     lib=os.path.join(path, name+'.zip')
     try:
        os.remove(lib)
