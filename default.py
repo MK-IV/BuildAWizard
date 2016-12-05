@@ -1,12 +1,12 @@
-import xbmcaddon, xbmcgui, xbmc, os, sys, urllib, urllib2, xbmcplugin, re, extract, downloader, updater 
+import xbmcaddon, xbmcgui, xbmc, os, sys, urllib, urllib2, xbmcplugin, re, extract, downloader
 
 
 USER_AGENT = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'
-addon_id="plugin.program.BauildATester"
+addon_id="addonname"
 ADDON=xbmcaddon.Addon(id=addon_id)
-AddonTitle="Builda tester wizard"
-proname="amc"
-pointerurl="https://mk-iv.github.io"
+AddonTitle="wizardname"
+proname="providername"
+pointerurl="zipurl"
 dialog=xbmcgui.Dialog()
 HOME=xbmc.translatePath('special://home/')
 dp=xbmcgui.DialogProgress()
@@ -61,7 +61,7 @@ def Open_Url(url):
 def Wizard(name,url,description):
     path = xbmc.translatePath(os.path.join('special://home/addons','packages'))
     dp = xbmcgui.DialogProgress()        
-    dp.create("Builda tester wizard","Downloading required files... ",'', 'Please Wait')
+    dp.create("wizardname","Downloading required files... ",'', 'Please Wait')
     lib=os.path.join(path, name+'.zip')
     try:
        os.remove(lib)
@@ -256,13 +256,14 @@ if mode==None or url==None or len(url)<1:
         xbmc.log('                                    ===---------===')
         xbmc.log('     ----------------------   Get it at http://get.mkiv.ca   ---------------------')
         xbmc.log('===========================================================================================')
+        if os.path.exists(Updater):
+            import updater 
+            updater.UpdateCheck(AddonTitle, addon_id)
+            pass
+        else: pass
         Index()
         
 elif mode==1:
-    if os.path.exists(Updater):
-        updater.UpdateCheck(AddonTitle, addon_id)
-        pass
-    else: pass
     Wizard(name,url,description)
         
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
