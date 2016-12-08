@@ -1,4 +1,4 @@
-import xbmcaddon, xbmcgui, xbmc, os, sys, urllib, urllib2, xbmcplugin, re, extract, downloader
+import xbmcaddon, xbmcgui, xbmc, os, sys, urllib, urllib2, xbmcplugin, re, extract, downloader, time, sqlite3
 
 
 USER_AGENT = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'
@@ -61,7 +61,7 @@ def Open_Url(url):
 def Wizard(name,url,description):
     path = xbmc.translatePath(os.path.join('special://home/addons','packages'))
     dp = xbmcgui.DialogProgress()        
-    dp.create("wizardname","Downloading required files... ",'', 'Please Wait')
+    dp.create("wizardname","Downloading "+name+"... ",'', 'Please Wait')
     lib=os.path.join(path, name+'.zip')
     try:
        os.remove(lib)
@@ -69,16 +69,59 @@ def Wizard(name,url,description):
        pass
     downloader.download(url, lib, dp)
     addonfolder = xbmc.translatePath(os.path.join('special://','home'))
-    dp.update(0,"Downloading required files...[COLOR lime]DONE[/COLOR]", "Extracting")
-    if os.path.exists(Addons26):
-        TriggerMigration()
+    '''xbmc_version=xbmc.getInfoLabel("System.BuildVersion")
+    version=float(xbmc_version[:4])
+    if version >= 17.0 and version <= 17.9:
+        dp.update(0,"Downloading "+name+"...[COLOR lime]DONE[/COLOR]","Applying Patch...")
+        path = xbmc.translatePath(os.path.join('special://home/addons','packages'))
+        reqzip=os.path.join(path,'requests.zip')
+        try:
+            os.remove(reqzip)
+        except:
+            pass
+        downloader.download('https://github.com/MK-IV/Dependencies/raw/master/requests.zip', reqzip, dp)
+        time.sleep(.5)
+        try:
+            shutil.rmtree(Requests)
+        except: pass
+        time.sleep(2)
+        try: 
+            extract.all(reqzip,ADDONS, dp) 
+        except BaseException as e:
+            pass
+        dp.update(0,"Applying Patch...[COLOR lime]DONE[/COLOR]","Extracting...")
         pass
-    else:
-        pass   
+    else:'''
+    dp.update(0,"Downloading "+name+"...[COLOR lime]DONE[/COLOR]", "Extracting...")
     try: 
+        '''addonfolder = xbmc.translatePath(os.path.join('special://','home'))
+        path = xbmc.translatePath(os.path.join('special://home/addons','packages'))
+        lib=os.path.join(path, name+'.zip')
+        time.sleep(.5)'''
         extract.all(lib,addonfolder,dp)
-    except IOError as e:
-        xbmc.log(''+e+'') 
+    except BaseException as e:
+        pass       
+    time.sleep(.5)
+    try:
+       os.remove(lib)
+    except:
+       pass
+    '''if version >= 17.0 and version <= 17.9:
+        dp.update(0,"Extracting...[COLOR lime]DONE[/COLOR]", "Updating Krypton Database")
+        conn = sqlite3.connect(Addons26)
+        cursor = conn.cursor()
+
+        sql = """
+        UPDATE installed 
+        SET enabled = '1' 
+        WHERE enabled = '0'
+        """
+        cursor.execute(sql)
+        conn.commit()
+        time.sleep(2)
+        xbmc.executebuiltin('UpdateLocalAddons')
+        pass
+    else: pass'''
     dialog.ok("Your Setup Is Almost Finished...", 'The application will now close.', '', 'On your next start please leave it sit for a minute to allow add-ons to update.')
     KillKodi()
  
