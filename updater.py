@@ -45,15 +45,20 @@ def UpdateCheck(AddonTitle, addon_id):
                     os.remove(lib)
                 except:
                     pass
-                    Addons = xbmc.translatePath('special://home/addons/')
-                    addontmp = xbmc.translatePath(os.path.join(Addons+'BuildAWizard-master/','addon.xml'))
-                    defaulttmp = xbmc.translatePath(os.path.join(Addons+'BuildAWizard-master/','default.py'))
-                    updatetmp = xbmc.translatePath(os.path.join(Addons+'BuildAWizard-master/','updater.py'))
-                    defaultpy = xbmc.translatePath(os.path.join(Addons+addon_id,'default.py'))
-                    updatepy = xbmc.translatePath(os.path.join(Addons+addon_id,'updater.py'))
-                    addonxml = xbmc.translatePath(os.path.join(Addons+addon_id,'addon.xml'))
-                    local = xbmc.translatePath(os.path.join(Addons,addon_id))
-                    master = xbmc.translatePath(os.path.join(Addons,'BuildAWizard-master'))
+                Addons = xbmc.translatePath('special://home/addons/')
+                addontmp = xbmc.translatePath(os.path.join(Addons+'BuildAWizard-master/','addon.xml'))
+                defaulttmp = xbmc.translatePath(os.path.join(Addons+'BuildAWizard-master/','default.py'))
+                updatetmp = xbmc.translatePath(os.path.join(Addons+'BuildAWizard-master/','updater.py'))
+                defaultpy = xbmc.translatePath(os.path.join(Addons+addon_id,'default.py'))
+                updatepy = xbmc.translatePath(os.path.join(Addons+addon_id,'updater.py'))
+                addonxml = xbmc.translatePath(os.path.join(Addons+addon_id,'addon.xml'))
+                local = xbmc.translatePath(os.path.join(Addons,addon_id))
+                localtmp = xbmc.translatePath(os.path.join(Addons,addon_id+'-tmp'))
+                master = xbmc.translatePath(os.path.join(Addons,'BuildAWizard-master'))
+                fanart = xbmc.translatePath(os.path.join(local,'fanart.jpg'))
+                icon = xbmc.translatePath(os.path.join(local,'icon.png'))
+                fanart1 = xbmc.translatePath(os.path.join(localtmp,'fanart.jpg'))
+                icon1 = xbmc.translatePath(os.path.join(localtmp,'icon.png'))
                 link = open(os.path.join(local, 'default.py'))
                 match = re.compile('addonname="(.+?)"wizardname="(.+?)"providername="(.+?)"zipurl="(.+?)"').findall(link)
                 for addonname,wizardname,providername,zipurl in match:
@@ -69,16 +74,17 @@ def UpdateCheck(AddonTitle, addon_id):
                     f.write(str(b))
                     f.close()
                     pass
-                os.unlink(defaultpy)
-                shutil.copy(defaulttmp,defaultpy)
-                os.unlink(addonxml)
-                shutil.copy(addontmp,addonxml)
-                os.unlink(updatepy)
-                shutil.copy(updatetmp,updatepy)
-                
-                os.rename(master,local)
-                xbmc.executebuiltin("Container.Refresh")
+                try:
+                    os.rename(local,localtmp)
+                    os.rename(master,local)
+                    if os.path.exists(icon1):
+                        shutil.copy(icon1,icon)
+                    if os.path.exists(fanart1):
+                        shutil.copy(fanart1,fanart)
+                    shutil.rmtree(localtmp)
+                except: pass
                 dp.close
+                xbmc.executebuiltin("Container.Refresh")
                 #except: pass
             else: pass
     except: pass
